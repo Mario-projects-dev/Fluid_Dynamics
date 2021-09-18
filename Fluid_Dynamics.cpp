@@ -4,6 +4,24 @@
 #include <iostream>
 #include <cstdio>
 
+void updateWave(const double timeInterval, double* x, double* speed)
+{
+    (*x) += timeInterval * (*speed);
+
+
+if ((*x) > 1.0)
+{
+    (*speed) *= -1.0;
+    (*x) = 1.0 + timeInterval * (*speed);
+} 
+else if ((*x) < 0.0) 
+{
+    (*speed) *= -1.0;
+    (*x) = timeInterval * (*speed);
+}
+};
+
+
 int main()
 {
     double x = 0.0;
