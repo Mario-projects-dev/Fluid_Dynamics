@@ -5,10 +5,15 @@
 #include <cstdio>
 #include <array>
 #include <cmath>
+#include <algorithm>
+#include <chrono>
+#include <string>
+#include <thread>
 
 const size_t kBufferSize = 80;
 
 using namespace std;
+using namespace chrono;
 
 void updateWave(const double timeInterval, double* x, double* speed)
 {
@@ -27,6 +32,48 @@ else if ((*x) < 0.0)
 }
 };
 
+void accumulateWaveToHeightField(const double x, const double waveLenght, const double maxHeight, array<double, kBufferSize>* heightField)
+{
+    const double quarterWaveLenght = 0.25 * waveLenght;
+    const int start = static_cast<int>((x - quarterWaveLenght) * kBufferSize);
+    const int end = static_cast<int>((x + quarterWaveLenght) * kBufferSize);
+
+    for (int i = start; i < end; ++i)
+    {
+        int iNew = i;
+        if (i < 0)
+        {
+            iNew = -i - 1;
+        }
+        else if (i >= static_cast<int>(kBufferSize))
+        {
+            iNew = 2 * kBufferSize - i - 1;
+        }
+        double distance = fabs((i + 0.5) / kBufferSize - x);
+        double height = maxHeight * 0.5 * (cos(min(distance * M_PI / quarterWaveLenght, M_PI)) + 1.0);
+        (*heightField)[iNew] += height;
+    }
+}
+
+void draw(const array<double, kBufferSize>& heightField)
+{
+    string buffer(kBufferSize, ' ');
+
+    for (size_t i = 0; i < kBufferSize; ++i)
+    {
+        double height = heightField[i];
+        size_t tableIndex = min(static_cast<size_t>(floor(kGrayScaleTableSize * height)), kGrayScaleTableSize - 1);
+        buffer[i] = kGrayScaleTable[tableIndex];
+    }
+
+    for (size_t i = 0; i < kBufferSize; ++i)
+    {
+        printf("\b");
+    }
+
+    printf("%s", buffer.c_str());
+    fflush(stdout);
+}
 
 int main()
 {
@@ -50,7 +97,20 @@ int main()
     {
         updateWave(timeInterval, &x, &speedX);
         updateWave(timeInterval, &y, &speedY);
+
+        for (double& height : heightField)
+        {
+            height = 0.0;
+        }
+        accumulateWaveToHeightField(x, waveLenghtX, maxHeightX, &heightField);
+        accumulateWaveToHeightField(y, waveLenghtY, maxHeightY, &heightField);
+
+        draw(heightField);
+
+        this_thread::sleep_for(milliseconds(1000 / fps));
     }
+    printf("\n");
+    fflush(stdout);
 
     return 0;
 
