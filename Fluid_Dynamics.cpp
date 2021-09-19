@@ -3,6 +3,12 @@
 
 #include <iostream>
 #include <cstdio>
+#include <array>
+#include <cmath>
+
+const size_t kBufferSize = 80;
+
+using namespace std;
 
 void updateWave(const double timeInterval, double* x, double* speed)
 {
@@ -24,17 +30,26 @@ else if ((*x) < 0.0)
 
 int main()
 {
+    const waveLenghtX = 0.8;
+    const waveLenghtY = 1.2;
+
+    const maxHeightX = 0.5;
+    const maxHeightY = 0.4;
+
     double x = 0.0;
-    double y = 0.0;
+    double y = 1.0;
     double speedX = 1.0;
     double speedY = -0.5;
 
     const int fps = 100;
-    const double timeInterva = 1.0 / fps;
+    const double timeInterval = 1.0 / fps;
+
+    array<double, kBufferSize> heightField;
 
     for (int i = 0; i < 1000; ++i)
     {
-
+        updateWave(timeInterval, &x, &speedX);
+        updateWave(timeInterval, &y, &speedY);
     }
 
     return 0;
