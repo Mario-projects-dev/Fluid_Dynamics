@@ -1,5 +1,4 @@
-// Fluid_Dynamics.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+#define _USE_MATH_DEFINES
 
 #include <iostream>
 #include <cstdio>
@@ -10,10 +9,13 @@
 #include <string>
 #include <thread>
 
-const size_t kBufferSize = 80;
 
 using namespace std;
 using namespace chrono;
+
+const size_t kBufferSize = 80;
+const char* kGrayScaleTable = ".:-=+*#%@";
+const size_t kGrayScaleTableSize = sizeof(kGrayScaleTable) / sizeof(char);
 
 void updateWave(const double timeInterval, double* x, double* speed)
 {
@@ -77,11 +79,11 @@ void draw(const array<double, kBufferSize>& heightField)
 
 int main()
 {
-    const waveLenghtX = 0.8;
-    const waveLenghtY = 1.2;
+    const double waveLengthX = 0.8;
+    const double waveLengthY = 1.2;
 
-    const maxHeightX = 0.5;
-    const maxHeightY = 0.4;
+    const double maxHeightX = 0.5;
+    const double maxHeightY = 0.4;
 
     double x = 0.0;
     double y = 1.0;
@@ -102,8 +104,8 @@ int main()
         {
             height = 0.0;
         }
-        accumulateWaveToHeightField(x, waveLenghtX, maxHeightX, &heightField);
-        accumulateWaveToHeightField(y, waveLenghtY, maxHeightY, &heightField);
+        accumulateWaveToHeightField(x, waveLengthX, maxHeightX, &heightField);
+        accumulateWaveToHeightField(y, waveLengthY, maxHeightY, &heightField);
 
         draw(heightField);
 
